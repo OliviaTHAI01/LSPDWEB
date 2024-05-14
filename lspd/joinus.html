@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Application Form - LSPD</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        width: 80%;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2 {
+        text-align: center;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    input[type="text"], input[type="date"], select {
+        width: 100%;
+        padding: 8px;
+        margin-top: 3px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    input[type="submit"] {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    textarea {
+        width: 100%;
+        height: 150px;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Los Santos Police Department</h1>
+    <h2>Application Form</h2>
+    <form action="/submit_application" method="post">
+        <div class="form-group">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" required>
+        </div>
+        <div class="form-group">
+            <label for="dateOfBirth">Date of Birth:</label>
+            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+        </div>
+        <div class="form-group">
+            <label for="citizenship">Citizenship Status:</label>
+            <select id="citizenship" name="citizenship" required>
+                <option value="">Select One</option>
+                <option value="citizen">Citizen</option>
+                <option value="permanentResident">Permanent Resident</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="education">Highest Level of Education:</label>
+            <select id="education" name="education" required>
+                <option value="">Select One</option>
+                <option value="highSchool">High School Diploma</option>
+                <option value="ged">GED</option>
+                <option value="college">College Degree</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="criminalRecord">Do you have a criminal record? (Yes/No)</label>
+            <select id="criminalRecord" name="criminalRecord" required>
+                <option value="">Select One</option>
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="motivation">Why do you want to join the LSPD?</label>
+            <textarea id="motivation" name="motivation" required></textarea>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Submit Application">
+        </div>
+    </form>
+</div>
+</body>
+</html>
