@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คำนวณค่าปรับและจำนวนการจำคุก</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        width: 80%;
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+
+    .datetime {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 30px;
+        font-size: 18px;
+        color: #666;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    input[type="text"] {
+        width: calc(100% - 16px);
+        padding: 8px;
+        margin-top: 3px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    button {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .refresh-button {
+    background-color: red; /* สีแดง */
+    color: white; /* ตัวอักษรสีขาว */
+}
+
+    .result {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .summary {
+        margin-top: 20px;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+    }
+    .navigation button {
+        padding: 5px 8px;
+        font-size: 12px;
+        background-color: navy; /* เปลี่ยนเป็นสีน้ำเงิน */
+        color: white; /* เปลี่ยนเป็นสีข้อความเป็นสีขาว */
+        border: none; /* ลบเส้นขอบ */
+        cursor: pointer; /* เปลี่ยนเป็นรูปแบบตัวชี้เมาส์เมื่อโฮเวอร์ */
+    }
+
+    .navigation img {
+        width: 20px; /* Adjust the width as necessary */
+        height: 20px; /* Adjust the height as necessary */
+        margin-right: 5px; /* Space between the image and the text */
+        vertical-align: middle; /* Align the image with the middle of the text */
+    }
+</style>
+</head>
+<body>
+    <div class="navigation">
+        <button onclick="window.location.href='#';">
+            <img src="news_icon.png" alt="ข่าวสาร">ข่าวสาร
+        </button>
+        <button onclick="window.location.href='joinus.html';">
+            <img src="police_icon.png" alt="สมัครตำรวจ">สมัครตำรวจ
+        </button>
+        <button onclick="window.location.href='law.html';">
+            <img src="funny_icon.png" alt="">กฏหมาย
+        </button>
+        <button onclick="window.location.href='page5.html';">
+            <img src="contact_icon.png" alt="ติดต่อตำรวจ">ติดต่อตำรวจ
+        </button>
+    </div>
+    
+<div class="container">
+    <h1>คำนวณค่าปรับและจำนวนการจำคุก</h1>
+    <div class="datetime" id="datetime"></div>
+    <div class="form-group">
+        <input type="text" id="search" onkeyup="searchOffense()" placeholder="ค้นหารายการ...">
+    </div>
+    
+    <!-- รายการที่ 1 -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="50" data-days="0"> 001: ขับขี่ยานพาหนะโดยไม่มีใบอนุญาตขับขี่ (50$) เวลาจำคุก: 0 วัน </label>
+</div>
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="50" data-days="0"> 002: ขับขี่ยานพาหนะฝ่าฝืน STOPSIGN (50$) เวลาจำคุก: 0 วัน </label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="150" data-days="5"> 003: ขับขี่ยานพาหนะความเร็วเกิน 80 Km/Hr (150$) เวลาจำคุก: 5 วัน </label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="200" data-days="10"> 004: ขับขี่ยานพาหนะโดยประมาท / หวาดเสียว (200$) เวลาจำคุก: 10 วัน </label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="300" data-days="15"> 005: ขับขี่ยานพาหนะภายใต้สารมึนเมา (300$) เวลาจำคุก: 15 วัน </label>
+</div>
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="50" data-days="0"> 006: ขับขี่ยานพาหนะโดยไม่สวมใส่อุปกรณ์ป้องกันภัย (50$) เวลาจำคุก: 0 วัน </label>
+</div>
+<!-- รายการที่ 2 -->
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="500" data-days="10"> 101: ทำร้ายร่างกายโดยเจตนา (500$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="600" data-days="15"> 102: ทำร้ายร่างกายด้วยอาวุธ (600$) เวลาจำคุก: 15 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="20"> 103: พยายามฆ่าให้ถึงตาย (700$) เวลาจำคุก: 20 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="8000" data-days="25"> 104: ฆาตกรรมจนถึงแก่ความตาย (8000$) เวลาจำคุก: 25 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="1000" data-days="10"> 105: อำพรางศพหรือร่างกาย (1000$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="600" data-days="15"> 106: กักขังหน่วงเหนี่ยว (600$) เวลาจำคุก: 15 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="20"> 107: ลักพาตัว/อุ้มโดยหวังผล (700$) เวลาจำคุก: 20 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="300" data-days="5"> 108: การข่มขู่ (300$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="800" data-days="15"> 109: การทรมาน (800$) เวลาจำคุก: 15 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="600" data-days="10"> 110: การปลอมแปลง (600$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="300" data-days="5"> 111: การสวมใส่หน้ากากในที่สารธารณะ (300$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="400" data-days="10"> 112: การฉ้อโกงต่อบุคคล (400$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="500" data-days="15"> 113: การโจรกรรมต่อบุคคล (500$) เวลาจำคุก: 15 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="600" data-days="15"> 114: การปล้นต่อบุคคล (600$) เวลาจำคุก: 15 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="1000" data-days="25"> 115: การข่มขืน (1000$) เวลาจำคุก: 25 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="400" data-days="5"> 116: การสะกดรอยตาม (400$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="1200" data-days="25"> 117: การล่วงละเมิดทางเพศ (1200$) เวลาจำคุก: 25 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="900" data-days="10"> 118: ความรุนแรงภายในครอบครัว (900$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- สิ้นสุดรายการ -->
+<!-- รายการที่ 3 -->
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="500" data-days="5"> 201: ทำลายทรัพย์สินของรัฐ (500$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="10"> 202: พยายามขึ้ยรถเจ้าหน้าที่ตำรวจ (700$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="600" data-days="10"> 203: พยายามลักทรัพย์ของรัฐ (600$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="400" data-days="7"> 204: ปลุกระดมให้เกิดการจลาจล (400$) เวลาจำคุก: 7 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="500" data-days="5"> 205: การติดสินบนเจ้าหน้าที่รัฐ (500$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="550" data-days="10"> 206: การชุมนุมที่ผิดกฎหมาย (550$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="500" data-days="10"> 207: ปลอมแปลงหลักฐาน (500$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="600" data-days="15"> 208: ข่มขู่พยาน (600$) เวลาจำคุก: 15 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="20"> 209: การละเมิดอำนาจศาล (700$) เวลาจำคุก: 20 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="400" data-days="5"> 210: ให้การเท็จ (400$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="500" data-days="10"> 211: ต่อต้านการจับกุม (500$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="600" data-days="25"> 212: การแอบอ้างแสดงตนเป็นรัฐบาล (600$) เวลาจำคุก: 25 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="600" data-days="10"> 213: การต่อสู้และการใช้กำลังกับเจ้าหน้าที่รัฐ (600$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="10"> 214: หลบหนีเจ้าหน้าที่บังคับใช้กฎหมาย (700$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="600" data-days="10"> 215: ไม่ให้ความร่วมมือกับเจ้าหน้าที่บังคับใช้กฏหมาย (600$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- สิ้นสุดรายการ -->
+<!-- รายการที่ 4 -->
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="5"> 301: พกพาอาวุธระยะใกล้และไกลในที่สาธารณะ (700$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="800" data-days="8"> 302: นำอาวุธระยะใกล้และไกลไปทำร้ายผู้อื่นจนบาดเจ็บ (800$) เวลาจำคุก: 8 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="900" data-days="10"> 303: นำอาวุธระยะใกล้และไกลไปทำร้ายผู้อื่นจนบาดเจ็บสาหัส (900$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="1000" data-days="25"> 304: พยายามฆ่าโดยใช้อาวุธ (1000$) เวลาจำคุก: 25 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="400" data-days="5"> 305: พยายามลักลอบหรือซ่อนอาวุธผิดกฏหมาย (400$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="500" data-days="10"> 306: เล็งปืนใส่บุคคลอื่น (500$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="600" data-days="8"> 307: ยิงปืนขึ้นฟ้า (600$) เวลาจำคุก: 8 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="10"> 308: ยิงปืนจากยานพาหนะ (700$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="10"> 309: ยิงปืนในที่สารธารณะ (700$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="800" data-days="5"> 310: การซื้อขายหรือแลกเปลี่ยนอาวุธปืนและเครื่องกระสุน (800$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- สิ้นสุดรายการ -->
+<!-- รายการที่ 5 -->
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="500" data-days="5"> 401: ครอบครองคลื่นวิทยุและวิทยุสื่อสารอย่างผิดกฏหมาย (500$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="200" data-days="5"> 402: ครอบครองอุปกรณ์งัดแงะรถ (200$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="300" data-days="5"> 403: ครอบครองสิ่งของจากการงัดบ้าน (300$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="300" data-days="5"> 404: ครอบครองสิ่งของจากการแยกชิ้นส่วนยานพาหนะ (300$) เวลาจำคุก: 5 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="400" data-days="10"> 405: ครอบครองหน่อกัญชา Weed Buds ทุกชนิด (400$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="300" data-days="10"> 406: ครอบครองเมล็ดกัญชา Weed Seeds ทุกชนิด (300$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="450" data-days="10"> 407: ครอบครองกัญชาชนิด Weed Bag (450$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="400" data-days="10"> 408: ครอบครองดอกกัญชา Haze ทุกชนิด (400$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="600" data-days="10"> 409: ครอบครองกัญชาชนิด Skunk 2g (600$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="400" data-days="10"> 410: ครอบครองเห็ดวิเศษ (400$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="400" data-days="10"> 411: ครอบครองยาชนิด Ecstasy (400$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="450" data-days="10"> 412: ครอบครองยาชนิด XTC BAG (450$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="10"> 413: ครอบครองยาชนิด OX (700$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="10"> 414: ครอบครองยาชนิด XANAX PILL (700$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="10"> 415: ครอบครองยาชนิด Prescription (700$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="700" data-days="10"> 416: ครอบครองเหรียญ Rolling Coin (700$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- เพิ่ม attribute data-days เพื่อบอกจำนวนวันจำคุก -->
+<div class="form-group">
+    <label><input type="checkbox" name="offense" value="300" data-days="10"> 417: ครอบครองเหรียญ Coin (300$) เวลาจำคุก: 10 วัน</label>
+</div>
+<!-- สิ้นสุดรายการ -->
+
+    <div class="form-group">
+        <button onclick="calculate()">คำนวณ</button>
+        <button onclick="location.reload()" class="refresh-button">รีเฟรชหน้าเว็บ</button>
+    </div>
+    
+    <div class="result" id="result">
+        <!-- ผลลัพธ์จากการคำนวณจะปรากฏที่นี่ -->
+    </div>
+    <div class="summary" id="summary">
+        <!-- สรุปรายการที่ผู้ใช้เลือกจะปรากฏที่นี่ -->
+    </div>
+</div>
+
+<audio id="audio" src="music.mp3" preload="auto"></audio>
+
+<script>
+    function calculate() {
+    var offenses = document.getElementsByName("offense");
+    var totalFine = 0;
+    var totalPrisonDays = 0;
+    var selectedOffenses = [];
+    var isSelected = false; // เพิ่มตัวแปรเพื่อตรวจสอบว่ามีการเลือกรายการหรือไม่
+
+    for (var i = 0; i < offenses.length; i++) {
+        if (offenses[i].checked) {
+            isSelected = true; // อัพเดตตัวแปรว่ามีการเลือก
+            var fine = parseInt(offenses[i].value);
+            var prisonDays = parseInt(offenses[i].getAttribute("data-days"));
+            totalFine += fine;
+            totalPrisonDays += prisonDays;
+            var offenseName = offenses[i].parentNode.textContent.trim();
+            selectedOffenses.push(offenseName);
+        }
+    }
+
+    if (!isSelected) {
+        alert("กรุณาเลือกรายการความผิดอย่างน้อยหนึ่งรายการ"); // แสดงข้อความแจ้งเตือน
+    } else {
+        var resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = "<p>รวมค่าปรับทั้งหมด: $" + totalFine + "</p><p>รวมเวลาจำคุกทั้งหมด: " + totalPrisonDays + " วัน</p>";
+
+        var summaryDiv = document.getElementById("summary");
+        summaryDiv.innerHTML = "<h2>รายการที่เลือก</h2><ul>";
+        for (var j = 0; j < selectedOffenses.length; j++) {
+            summaryDiv.innerHTML += "<li>" + selectedOffenses[j] + "</li>";
+        }
+        summaryDiv.innerHTML += "</ul>";
+    }
+
+
+}
+
+
+    function searchOffense() {
+        var input, filter, formGroups, label, i;
+        input = document.getElementById("search");
+        filter = input.value.toUpperCase();
+        formGroups = document.getElementsByClassName("form-group");
+
+        for (i = 0; i < formGroups.length; i++) {
+            label = formGroups[i].getElementsByTagName("label")[0];
+            if (label) {
+                if (label.textContent.toUpperCase().indexOf(filter) > -1) {
+                    formGroups[i].style.display = "";
+                } else {
+                    formGroups[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    // ฟังก์ชั่นเพิ่มระบบวันเวลา
+    function updateDateTime() {
+        var datetimeDiv = document.getElementById("datetime");
+        var now = new Date();
+        var datetimeString = "วันที่: " + now.toLocaleDateString() + ", เวลา: " + now.toLocaleTimeString();
+        datetimeDiv.innerHTML = datetimeString;
+    }
+
+    // เรียกใช้งานฟังก์ชั่นเพิ่มระบบวันเวลาทุกๆ 1 วินาที
+    setInterval(updateDateTime, 1000);
+</script>
+
+</body>
+</html>
